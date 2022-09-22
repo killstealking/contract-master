@@ -17,5 +17,5 @@ poetry install --sync
 #### Setup Linter and Formatter
 
 ```sh
-pre-commit install
+poetry run pre-commit install
 ```
