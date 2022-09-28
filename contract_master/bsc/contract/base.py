@@ -8,6 +8,7 @@ from web3 import Web3
 class Balance(BaseModel):
     application: str
     service: Literal["spot", "farming", "staked", "liquidity pool", "lending"]
+    type: Literal["common", "farming_supply", "farming_reward", "staked_supply", "staked_reward"]
     token: str
     balance: int
     decimals: int
