@@ -8,6 +8,7 @@ class TokenBalance(BaseModel):
     token: str
     balance: int
     decimals: int
+    symbol: str
 
 
 class CommonServiceItem(BaseModel):

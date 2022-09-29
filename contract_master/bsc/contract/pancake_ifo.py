@@ -26,7 +26,8 @@ class PancakeIFO(Contract):
                 data=TokenBalance(
                     token=token,
                     balance=last_action_balance,
-                    decimals=self.get_decimals(token=token),
+                    decimals=self.get_decimals(token),
+                    symbol=self.get_symbol(token),
                 )
             ),
         )

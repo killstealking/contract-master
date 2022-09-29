@@ -34,10 +34,16 @@ class PancakeLiquidityPool(Contract):
                 data=LiquidityPoolServiceItem.LiquidityPoolServiceData(
                     supply=[
                         TokenBalance(
-                            token=token0, balance=user_token0_balance, decimals=self.get_decimals(token=token0)
+                            token=token0,
+                            balance=user_token0_balance,
+                            decimals=self.get_decimals(token=token0),
+                            symbol=self.get_symbol(token0),
                         ),
                         TokenBalance(
-                            token=token1, balance=user_token1_balance, decimals=self.get_decimals(token=token1)
+                            token=token1,
+                            balance=user_token1_balance,
+                            decimals=self.get_decimals(token1),
+                            symbol=self.get_symbol(token1),
                         ),
                     ]
                 )

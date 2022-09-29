@@ -20,6 +20,11 @@ class Bep20TokenContract(Contract):
             application="bsc",
             service="spot",
             item=CommonServiceItem(
-                data=TokenBalance(token=self.address, balance=balance, decimals=self.get_decimals(token=self.address))
+                data=TokenBalance(
+                    token=self.address,
+                    balance=balance,
+                    decimals=self.get_decimals(self.address),
+                    symbol=self.get_symbol(self.address),
+                )
             ),
         )

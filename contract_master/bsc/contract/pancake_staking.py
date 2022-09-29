@@ -30,21 +30,15 @@ class PancakeStaking(Contract):
             block_identifier=block_identifier
         )
         token = self.contract.functions.stakedToken().call()
-        decimals = self.get_decimals(token=token)
         return TokenBalance(
-            token=token,
-            balance=amount,
-            decimals=decimals,
+            token=token, balance=amount, decimals=self.get_decimals(token), symbol=self.get_symbol(token)
         )
 
     def _get_reward_balance(self, account: str, block_identifier: int | Literal["latest"]) -> TokenBalance:
-        reward_balances = self.contract.functions.pendingReward(Web3.toChecksumAddress(account)).call(
+        balance = self.contract.functions.pendingReward(Web3.toChecksumAddress(account)).call(
             block_identifier=block_identifier
         )
         token = self.contract.functions.rewardToken().call()
-        decimals = self.get_decimals(token=token)
         return TokenBalance(
-            token=token,
-            balance=reward_balances,
-            decimals=decimals,
+            token=token, balance=balance, decimals=self.get_decimals(token), symbol=self.get_symbol(token)
         )

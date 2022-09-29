@@ -27,7 +27,8 @@ class PancakeVault(Contract):
                 data=TokenBalance(
                     token=token,
                     balance=int(token_balance * (user_shares / total_shares)),
-                    decimals=self.get_decimals(token=token),
+                    decimals=self.get_decimals(token),
+                    symbol=self.get_symbol(token),
                 )
             ),
         )
