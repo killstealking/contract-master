@@ -49,7 +49,7 @@ class BscContractMaster:
             case "ignored":
                 return IgnoredResult(token=contract_address)
             case _:
-                raise Exception("AddressNotSupported")
+                raise Exception(f"AddressNotSupported: {contract_address}")
 
         return contract(web3=self.web3, address=contract_address).balance_of(
             account=user_address, block_height=block_height
