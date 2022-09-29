@@ -1,8 +1,9 @@
 from os import path
+from typing import Type
 
 from web3 import Web3
 
-from ..common import BalanceResult, IgnoredResult, load_master_data
+from ..common import BalanceResult, Contract, IgnoredResult, load_master_data
 from .contract import (
     Bep20TokenContract,
     PancakeIFO,
@@ -32,29 +33,24 @@ class BscContractMaster:
         self, contract_address: str, user_address: str, block_height: int | None = None
     ) -> BalanceResult | IgnoredResult:
         master = self.master[contract_address]
+        contract: Type[Contract]
 
         match master.type:
             case "bep20like":
-                return self.get_bep20_token_balance(
-                    contract_address=contract_address, user_address=user_address, block_height=block_height
-                )
+                contract = Bep20TokenContract
             case "pancake_ifo":
-                return PancakeIFO(web3=self.web3, address=contract_address).balance_of(
-                    account=user_address, block_height=block_height
-                )
+                contract = PancakeIFO
             case "pancake_liquidity_pool":
-                return PancakeLiquidityPool(web3=self.web3, address=contract_address).balance_of(
-                    account=user_address, block_height=block_height
-                )
+                contract = PancakeLiquidityPool
             case "pancake_staking":
-                return PancakeStaking(web3=self.web3, address=contract_address).balance_of(
-                    account=user_address, block_height=block_height
-                )
+                contract = PancakeStaking
             case "pancake_vault":
-                return PancakeVault(web3=self.web3, address=contract_address).balance_of(
-                    account=user_address, block_height=block_height
-                )
+                contract = PancakeVault
             case "ignored":
                 return IgnoredResult(token=contract_address)
             case _:
                 raise Exception("AddressNotSupported")
+
+        return contract(web3=self.web3, address=contract_address).balance_of(
+            account=user_address, block_height=block_height
+        )
