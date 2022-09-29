@@ -1,21 +1,15 @@
 from abc import ABC, abstractmethod
-from typing import Literal
 
 from pydantic.main import BaseModel
 from web3 import Web3
 
+from .models import ServiceItem
 
-class Balance(BaseModel):
-    """
-    ContractMaster.get_balanceで残高が取得できた場合の結果
-    """
 
+class BalanceResult(BaseModel):
     application: str
-    service: Literal["spot", "farming", "staked", "liquidity pool", "lending"]
-    type: Literal["common", "farming_supply", "farming_reward", "staked_supply", "staked_reward"]
-    token: str
-    balance: int
-    decimals: int
+    service: str
+    item: ServiceItem
 
 
 class IgnoredResult(BaseModel):
@@ -37,5 +31,5 @@ class BaseContract(ABC):
         self.contract = self.web3.eth.contract(address=Web3.toChecksumAddress(address), abi=self.ABI)
 
     @abstractmethod
-    def balance_of(self, account: str, block_height: int | None = None) -> Balance | list[Balance]:
+    def balance_of(self, account: str, block_height: int | None = None) -> BalanceResult | IgnoredResult:
         pass

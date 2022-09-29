@@ -2,7 +2,7 @@ from typing import Literal
 
 from web3 import Web3
 
-from .base import Balance, BaseContract
+from ...common import BalanceResult, BaseContract, CommonServiceItem, TokenBalance
 
 
 class Bep20TokenContract(BaseContract):
@@ -13,15 +13,16 @@ class Bep20TokenContract(BaseContract):
     def __init__(self, web3: Web3, address: str) -> None:
         super().__init__(web3, address)
 
-    def balance_of(self, account: str, block_height: int | None = None) -> Balance:
+    def balance_of(self, account: str, block_height: int | None = None) -> BalanceResult:
         block_identifier = block_height if block_height else "latest"
-
-        balance = self.contract.functions.balanceOf(Web3.toChecksumAddress(account)).call(
+        balance: int = self.contract.functions.balanceOf(Web3.toChecksumAddress(account)).call(
             block_identifier=block_identifier
         )
-        decimals = self.get_decimals(block_identifier=block_identifier)
-        return Balance(
-            application="bsc", service="spot", type="common", token=self.address, balance=balance, decimals=decimals
+        decimals: int = self.get_decimals(block_identifier=block_identifier)
+        return BalanceResult(
+            application="bsc",
+            service="spot",
+            item=CommonServiceItem(data=TokenBalance(token=self.address, balance=balance, decimals=decimals)),
         )
 
     def get_decimals(self, block_identifier: int | Literal["latest"]) -> int:
