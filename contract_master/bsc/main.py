@@ -5,6 +5,7 @@ from web3 import Web3
 from ..common import BalanceResult, IgnoredResult, load_master_data
 from .contract import (
     Bep20TokenContract,
+    PancakeIFO,
     PancakeLiquidityPool,
     PancakeStaking,
     PancakeVault,
@@ -36,6 +37,10 @@ class BscContractMaster:
             case "bep20like":
                 return self.get_bep20_token_balance(
                     contract_address=contract_address, user_address=user_address, block_height=block_height
+                )
+            case "pancake_ifo":
+                return PancakeIFO(web3=self.web3, address=contract_address).balance_of(
+                    account=user_address, block_height=block_height
                 )
             case "pancake_liquidity_pool":
                 return PancakeLiquidityPool(web3=self.web3, address=contract_address).balance_of(
