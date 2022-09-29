@@ -3,7 +3,7 @@ from os import path
 from web3 import Web3
 
 from ..common import BalanceResult, IgnoredResult, load_master_data
-from .contract import Bep20TokenContract, PancakeStaking
+from .contract import Bep20TokenContract, PancakePoolVault, PancakeStaking
 
 
 class BscContractMaster:
@@ -34,6 +34,10 @@ class BscContractMaster:
                 )
             case "pancake_staking":
                 return PancakeStaking(web3=self.web3, address=contract_address).balance_of(
+                    account=user_address, block_height=block_height
+                )
+            case "pancake_pool_vault":
+                return PancakePoolVault(web3=self.web3, address=contract_address).balance_of(
                     account=user_address, block_height=block_height
                 )
             case "ignored":
