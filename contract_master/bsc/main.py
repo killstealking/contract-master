@@ -1,12 +1,16 @@
+from os import path
+
 from web3 import Web3
 
+from ..common import load_master_data
 from .contract import Balance, Bep20TokenContract, IgnoredResult, SmartChefContract
-from .internal import load_master_data
 
 
 class BscContractMaster:
+    MASTER_CSV_FILE_PATH = path.join(path.dirname(__file__), "./master.csv")
+
     def __init__(self, quicknode_endpoint: str):
-        self.master = load_master_data()
+        self.master = load_master_data(BscContractMaster.MASTER_CSV_FILE_PATH)
         self.web3 = Web3(Web3.HTTPProvider(quicknode_endpoint))
         if not self.web3.isConnected():
             raise Exception("QuickNodeConnectionError")
