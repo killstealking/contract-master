@@ -34,7 +34,7 @@ def parse_args():
     return Arguments(
         platform=args.platform or "bsc",
         user_address=args.contract_address or "0xda28ecfc40181a6dad8b52723035dfba3386d26e",
-        contract_address=args.contract_address or "0xa80240eb5d7e05d3f250cf000eec0891d00b51cc",
+        contract_address=args.contract_address or "0x0ed7e52944161450477ee417de9cd3a859b14fd0",
         block_height=args.block_height if args.block_height else None,
         quicknode_endpoint=args.quicknode_endpoint or os.getenv("QUICKNODE_BSC_ENDPOINT", ""),
     )

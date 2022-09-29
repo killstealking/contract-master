@@ -3,7 +3,12 @@ from os import path
 from web3 import Web3
 
 from ..common import BalanceResult, IgnoredResult, load_master_data
-from .contract import Bep20TokenContract, PancakePoolVault, PancakeStaking
+from .contract import (
+    Bep20TokenContract,
+    PancakeLiquidityPool,
+    PancakeStaking,
+    PancakeVault,
+)
 
 
 class BscContractMaster:
@@ -32,12 +37,16 @@ class BscContractMaster:
                 return self.get_bep20_token_balance(
                     contract_address=contract_address, user_address=user_address, block_height=block_height
                 )
+            case "pancake_liquidity_pool":
+                return PancakeLiquidityPool(web3=self.web3, address=contract_address).balance_of(
+                    account=user_address, block_height=block_height
+                )
             case "pancake_staking":
                 return PancakeStaking(web3=self.web3, address=contract_address).balance_of(
                     account=user_address, block_height=block_height
                 )
-            case "pancake_pool_vault":
-                return PancakePoolVault(web3=self.web3, address=contract_address).balance_of(
+            case "pancake_vault":
+                return PancakeVault(web3=self.web3, address=contract_address).balance_of(
                     account=user_address, block_height=block_height
                 )
             case "ignored":
