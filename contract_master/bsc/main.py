@@ -36,8 +36,6 @@ class BscContractMaster:
         contract: Type[Contract]
 
         match master.type:
-            case "bep20like":
-                contract = Bep20TokenContract
             case "pancake_ifo":
                 contract = PancakeIFO
             case "pancake_liquidity_pool":
