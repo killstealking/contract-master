@@ -4,8 +4,10 @@ from typing import Literal, Optional, Union
 from pydantic import BaseModel
 
 
-class TokenBalance(BaseModel):
-    token: str
+class TokenAmount(BaseModel):
+    uti: str
+    amount: str
+    original_id: str
     balance: int
     decimals: int
     symbol: str
@@ -13,13 +15,13 @@ class TokenBalance(BaseModel):
 
 class CommonServiceItem(BaseModel):
     type: Literal["common"] = "common"
-    data: TokenBalance
+    data: TokenAmount
 
 
 class FarmingServiceItem(BaseModel):
     class FarmingServiceData(BaseModel):
-        supply: list[TokenBalance]
-        reward: list[TokenBalance]
+        supply: list[TokenAmount]
+        reward: list[TokenAmount]
         description: Optional[str] = None
 
     type: Literal["farming"] = "farming"
@@ -28,8 +30,8 @@ class FarmingServiceItem(BaseModel):
 
 class StakedServiceItem(BaseModel):
     class StakedServiceData(BaseModel):
-        supply: list[TokenBalance]
-        reward: list[TokenBalance]
+        supply: list[TokenAmount]
+        reward: list[TokenAmount]
         description: Optional[str] = None
 
     type: Literal["staked"] = "staked"
@@ -38,7 +40,7 @@ class StakedServiceItem(BaseModel):
 
 class LiquidityPoolServiceItem(BaseModel):
     class LiquidityPoolServiceData(BaseModel):
-        supply: list[TokenBalance]
+        supply: list[TokenAmount]
         description: Optional[str] = None
 
     type: Literal["liquidity pool"] = "liquidity pool"
@@ -47,9 +49,9 @@ class LiquidityPoolServiceItem(BaseModel):
 
 class LendingServiceItem(BaseModel):
     class LendingServiceData(BaseModel):
-        supply: list[TokenBalance]
-        borrow: list[TokenBalance]
-        reward: list[TokenBalance]
+        supply: list[TokenAmount]
+        borrow: list[TokenAmount]
+        reward: list[TokenAmount]
         health_rate: Optional[Decimal] = None
 
     type: Literal["lending"] = "lending"

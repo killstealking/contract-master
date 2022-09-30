@@ -1,6 +1,6 @@
 from web3 import Web3
 
-from ...common import BalanceResult, CommonServiceItem, Contract, TokenBalance
+from ...common import CommonServiceItem, Contract, ServiceItem, create_bsc_token_amount
 
 
 class PancakeVault(Contract):
@@ -11,7 +11,7 @@ class PancakeVault(Contract):
     def __init__(self, web3: Web3, address: str) -> None:
         super().__init__(web3, address)
 
-    def balance_of(self, account: str, block_height: int | None = None) -> BalanceResult:
+    def balance_of(self, account: str, block_height: int | None = None) -> ServiceItem:
         account = Web3.toChecksumAddress(account)
         block_identifier = block_height if block_height else "latest"
 
@@ -20,15 +20,11 @@ class PancakeVault(Contract):
         total_shares: int = self.contract.functions.totalShares().call(block_identifier=block_identifier)
         user_shares: int = self.contract.functions.userInfo(account).call(block_identifier=block_identifier)[0]
 
-        return BalanceResult(
-            application="pancake",
-            service="pool",
-            item=CommonServiceItem(
-                data=TokenBalance(
-                    token=token,
-                    balance=int(token_balance * (user_shares / total_shares)),
-                    decimals=self.get_decimals(token),
-                    symbol=self.get_symbol(token),
-                )
-            ),
+        return CommonServiceItem(
+            data=create_bsc_token_amount(
+                token=token,
+                balance=int(token_balance * (user_shares / total_shares)),
+                decimals=self.get_decimals(token),
+                symbol=self.get_symbol(token),
+            )
         )

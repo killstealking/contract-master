@@ -1,6 +1,6 @@
 from web3 import Web3
 
-from ...common import BalanceResult, CommonServiceItem, Contract, TokenBalance
+from ...common import CommonServiceItem, Contract, ServiceItem, create_bsc_token_amount
 
 
 class PancakeIFO(Contract):
@@ -11,7 +11,7 @@ class PancakeIFO(Contract):
     def __init__(self, web3: Web3, address: str) -> None:
         super().__init__(web3, address)
 
-    def balance_of(self, account: str, block_height: int | None = None) -> BalanceResult:
+    def balance_of(self, account: str, block_height: int | None = None) -> ServiceItem:
         account = Web3.toChecksumAddress(account)
         block_identifier = block_height if block_height else "latest"
 
@@ -19,15 +19,11 @@ class PancakeIFO(Contract):
         ifo_info: list[int] = self.contract.functions.userIFOInfo(account).call(block_identifier=block_identifier)
         last_action_balance: int = ifo_info[0]
 
-        return BalanceResult(
-            application="pancake",
-            service="ifo_pool",
-            item=CommonServiceItem(
-                data=TokenBalance(
-                    token=token,
-                    balance=last_action_balance,
-                    decimals=self.get_decimals(token),
-                    symbol=self.get_symbol(token),
-                )
-            ),
+        return CommonServiceItem(
+            data=create_bsc_token_amount(
+                token=token,
+                balance=last_action_balance,
+                decimals=self.get_decimals(token),
+                symbol=self.get_symbol(token),
+            )
         )

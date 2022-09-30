@@ -1,23 +1,8 @@
 from abc import ABC, abstractmethod
 
-from pydantic.main import BaseModel
 from web3 import Web3
 
 from .models import ServiceItem
-
-
-class BalanceResult(BaseModel):
-    application: str
-    service: str
-    item: ServiceItem
-
-
-class IgnoredResult(BaseModel):
-    """
-    ContractMaster.get_balanceでトークンが対象外の場合の結果
-    """
-
-    token: str
 
 
 class Contract(ABC):
@@ -32,7 +17,7 @@ class Contract(ABC):
         self.contract = self.web3.eth.contract(address=Web3.toChecksumAddress(address), abi=self.ABI)
 
     @abstractmethod
-    def balance_of(self, account: str, block_height: int | None = None) -> BalanceResult | IgnoredResult:
+    def balance_of(self, account: str, block_height: int | None = None) -> ServiceItem:
         pass
 
     def get_symbol(self, token: str) -> str:

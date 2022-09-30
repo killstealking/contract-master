@@ -1,6 +1,11 @@
 from web3 import Web3
 
-from ...common import BalanceResult, Contract, LiquidityPoolServiceItem, TokenBalance
+from ...common import (
+    Contract,
+    LiquidityPoolServiceItem,
+    ServiceItem,
+    create_bsc_token_amount,
+)
 
 
 class PancakeLiquidityPool(Contract):
@@ -11,7 +16,7 @@ class PancakeLiquidityPool(Contract):
     def __init__(self, web3: Web3, address: str) -> None:
         super().__init__(web3, address)
 
-    def balance_of(self, account: str, block_height: int | None = None) -> BalanceResult:
+    def balance_of(self, account: str, block_height: int | None = None) -> ServiceItem:
         account = Web3.toChecksumAddress(account)
         block_identifier = block_height if block_height else "latest"
 
@@ -27,25 +32,21 @@ class PancakeLiquidityPool(Contract):
         user_token0_balance = int(token0_reserve * user_share)
         user_token1_balance = int(token1_reserve * user_share)
 
-        return BalanceResult(
-            application="pancake",
-            service="liquidity pool",
-            item=LiquidityPoolServiceItem(
-                data=LiquidityPoolServiceItem.LiquidityPoolServiceData(
-                    supply=[
-                        TokenBalance(
-                            token=token0,
-                            balance=user_token0_balance,
-                            decimals=self.get_decimals(token=token0),
-                            symbol=self.get_symbol(token0),
-                        ),
-                        TokenBalance(
-                            token=token1,
-                            balance=user_token1_balance,
-                            decimals=self.get_decimals(token1),
-                            symbol=self.get_symbol(token1),
-                        ),
-                    ]
-                )
-            ),
+        return LiquidityPoolServiceItem(
+            data=LiquidityPoolServiceItem.LiquidityPoolServiceData(
+                supply=[
+                    create_bsc_token_amount(
+                        token=token0,
+                        balance=user_token0_balance,
+                        decimals=self.get_decimals(token=token0),
+                        symbol=self.get_symbol(token0),
+                    ),
+                    create_bsc_token_amount(
+                        token=token1,
+                        balance=user_token1_balance,
+                        decimals=self.get_decimals(token1),
+                        symbol=self.get_symbol(token1),
+                    ),
+                ]
+            )
         )

@@ -2,7 +2,13 @@ from typing import Literal
 
 from web3 import Web3
 
-from ...common import BalanceResult, Contract, StakedServiceItem, TokenBalance
+from ...common import (
+    Contract,
+    ServiceItem,
+    StakedServiceItem,
+    TokenAmount,
+    create_bsc_token_amount,
+)
 
 
 class PancakeStaking(Contract):
@@ -13,32 +19,28 @@ class PancakeStaking(Contract):
     def __init__(self, web3: Web3, address: str) -> None:
         super().__init__(web3, address)
 
-    def balance_of(self, account: str, block_height: int | None = None) -> BalanceResult:
+    def balance_of(self, account: str, block_height: int | None = None) -> ServiceItem:
         block_identifier = block_height if block_height else "latest"
 
         staked = self._get_staked_balance(account=account, block_identifier=block_identifier)
         reward = self._get_reward_balance(account=account, block_identifier=block_identifier)
 
-        return BalanceResult(
-            application="pancake",
-            service="staking",
-            item=StakedServiceItem(data=StakedServiceItem.StakedServiceData(supply=[staked], reward=[reward])),
-        )
+        return StakedServiceItem(data=StakedServiceItem.StakedServiceData(supply=[staked], reward=[reward]))
 
-    def _get_staked_balance(self, account: str, block_identifier: int | Literal["latest"]) -> TokenBalance:
+    def _get_staked_balance(self, account: str, block_identifier: int | Literal["latest"]) -> TokenAmount:
         amount, _reward_debt = self.contract.functions.userInfo(Web3.toChecksumAddress(account)).call(
             block_identifier=block_identifier
         )
         token = self.contract.functions.stakedToken().call()
-        return TokenBalance(
+        return create_bsc_token_amount(
             token=token, balance=amount, decimals=self.get_decimals(token), symbol=self.get_symbol(token)
         )
 
-    def _get_reward_balance(self, account: str, block_identifier: int | Literal["latest"]) -> TokenBalance:
+    def _get_reward_balance(self, account: str, block_identifier: int | Literal["latest"]) -> TokenAmount:
         balance = self.contract.functions.pendingReward(Web3.toChecksumAddress(account)).call(
             block_identifier=block_identifier
         )
         token = self.contract.functions.rewardToken().call()
-        return TokenBalance(
+        return create_bsc_token_amount(
             token=token, balance=balance, decimals=self.get_decimals(token), symbol=self.get_symbol(token)
         )

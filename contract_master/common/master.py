@@ -7,6 +7,8 @@ from pydantic import BaseModel
 class MasterData(BaseModel):
     address: str
     type: str
+    application: str
+    service: str
     name: str
 
 

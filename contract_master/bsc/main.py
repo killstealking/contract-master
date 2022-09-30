@@ -3,7 +3,13 @@ from typing import Type
 
 from web3 import Web3
 
-from ..common import BalanceResult, Contract, IgnoredResult, load_master_data
+from ..common import (
+    BalanceResult,
+    Contract,
+    ContractMaster,
+    IgnoredResult,
+    load_master_data,
+)
 from .contract import (
     Bep20TokenContract,
     PancakeIFO,
@@ -13,7 +19,7 @@ from .contract import (
 )
 
 
-class BscContractMaster:
+class BscContractMaster(ContractMaster):
     MASTER_CSV_FILE_PATH = path.join(path.dirname(__file__), "./master.csv")
 
     def __init__(self, quicknode_endpoint: str):
@@ -22,11 +28,15 @@ class BscContractMaster:
         if not self.web3.isConnected():
             raise Exception("QuickNodeConnectionError")
 
-    def get_bep20_token_balance(
+    def get_token_balance(
         self, contract_address: str, user_address: str, block_height: int | None = None
     ) -> BalanceResult:
-        return Bep20TokenContract(web3=self.web3, address=contract_address).balance_of(
-            account=user_address, block_height=block_height
+        return BalanceResult(
+            application="bsc",
+            service="spot",
+            item=Bep20TokenContract(web3=self.web3, address=contract_address).balance_of(
+                account=user_address, block_height=block_height
+            ),
         )
 
     def get_balance(
@@ -49,6 +59,10 @@ class BscContractMaster:
             case _:
                 raise Exception(f"AddressNotSupported: {contract_address}")
 
-        return contract(web3=self.web3, address=contract_address).balance_of(
-            account=user_address, block_height=block_height
+        return BalanceResult(
+            application=master.application,
+            service=master.service,
+            item=contract(web3=self.web3, address=contract_address).balance_of(
+                account=user_address, block_height=block_height
+            ),
         )

@@ -1,6 +1,6 @@
 from web3 import Web3
 
-from ...common import BalanceResult, CommonServiceItem, Contract, TokenBalance
+from ...common import CommonServiceItem, Contract, ServiceItem, create_bsc_token_amount
 
 
 class Bep20TokenContract(Contract):
@@ -11,20 +11,16 @@ class Bep20TokenContract(Contract):
     def __init__(self, web3: Web3, address: str) -> None:
         super().__init__(web3, address)
 
-    def balance_of(self, account: str, block_height: int | None = None) -> BalanceResult:
+    def balance_of(self, account: str, block_height: int | None = None) -> ServiceItem:
         block_identifier = block_height if block_height else "latest"
         balance: int = self.contract.functions.balanceOf(Web3.toChecksumAddress(account)).call(
             block_identifier=block_identifier
         )
-        return BalanceResult(
-            application="bsc",
-            service="spot",
-            item=CommonServiceItem(
-                data=TokenBalance(
-                    token=self.address,
-                    balance=balance,
-                    decimals=self.get_decimals(self.address),
-                    symbol=self.get_symbol(self.address),
-                )
-            ),
+        return CommonServiceItem(
+            data=create_bsc_token_amount(
+                token=self.address,
+                balance=balance,
+                decimals=self.get_decimals(self.address),
+                symbol=self.get_symbol(self.address),
+            )
         )
