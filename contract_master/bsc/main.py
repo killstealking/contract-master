@@ -7,6 +7,7 @@ from ..common import (
     BalanceResult,
     Contract,
     ContractMaster,
+    ErroredResult,
     IgnoredResult,
     load_master_data,
 )
@@ -30,18 +31,21 @@ class BscContractMaster(ContractMaster):
 
     def get_token_balance(
         self, contract_address: str, user_address: str, block_height: int | None = None
-    ) -> BalanceResult:
-        return BalanceResult(
-            application="bsc",
-            service="spot",
-            item=Bep20TokenContract(web3=self.web3, address=contract_address).balance_of(
-                account=user_address, block_height=block_height
-            ),
-        )
+    ) -> BalanceResult | ErroredResult:
+        try:
+            return BalanceResult(
+                application="bsc",
+                service="spot",
+                item=Bep20TokenContract(web3=self.web3, address=contract_address).balance_of(
+                    account=user_address, block_height=block_height
+                ),
+            )
+        except Exception as e:
+            return ErroredResult(token=contract_address, reason=str(e))
 
     def get_balance(
         self, contract_address: str, user_address: str, block_height: int | None = None
-    ) -> BalanceResult | IgnoredResult:
+    ) -> BalanceResult | IgnoredResult | ErroredResult:
         master = self.master[contract_address]
         contract: Type[Contract]
 
@@ -57,12 +61,15 @@ class BscContractMaster(ContractMaster):
             case "ignored":
                 return IgnoredResult(token=contract_address)
             case _:
-                raise Exception(f"AddressNotSupported: {contract_address}")
+                return ErroredResult(token=contract_address, reason=f"AddressNotSupported: {contract_address}")
 
-        return BalanceResult(
-            application=master.application,
-            service=master.service,
-            item=contract(web3=self.web3, address=contract_address).balance_of(
-                account=user_address, block_height=block_height
-            ),
-        )
+        try:
+            return BalanceResult(
+                application=master.application,
+                service=master.service,
+                item=contract(web3=self.web3, address=contract_address).balance_of(
+                    account=user_address, block_height=block_height
+                ),
+            )
+        except Exception as e:
+            return ErroredResult(token=contract_address, reason=str(e))

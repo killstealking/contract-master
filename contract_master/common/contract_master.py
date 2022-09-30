@@ -23,6 +23,15 @@ class IgnoredResult(BaseModel):
     token: str
 
 
+class ErroredResult(BaseModel):
+    """
+    ContractMaster.get_balanceでエラーが発生した場合の結果
+    """
+
+    token: str
+    reason: str
+
+
 class ContractMaster(ABC):
     MASTER_CSV_FILE_PATH: str
 
@@ -33,11 +42,11 @@ class ContractMaster(ABC):
     @abstractmethod
     def get_token_balance(
         self, contract_address: str, user_address: str, block_height: int | None = None
-    ) -> BalanceResult | IgnoredResult:
+    ) -> BalanceResult | IgnoredResult | ErroredResult:
         pass
 
     @abstractmethod
     def get_balance(
         self, contract_address: str, user_address: str, block_height: int | None = None
-    ) -> BalanceResult | IgnoredResult:
+    ) -> BalanceResult | IgnoredResult | ErroredResult:
         pass
