@@ -46,8 +46,10 @@ class BscContractMaster(ContractMaster):
     def get_balance(
         self, contract_address: str, user_address: str, block_height: int | None = None
     ) -> BalanceResult | IgnoredResult | ErroredResult:
-        master = self.master[contract_address]
         contract: Type[Contract]
+        master = self.master.get(contract_address, None)
+        if master is None:
+            return ErroredResult(token=contract_address, reason=f"UndefinedAddress: {contract_address}")
 
         match master.type:
             case "pancake_ifo":
@@ -61,7 +63,7 @@ class BscContractMaster(ContractMaster):
             case "ignored":
                 return IgnoredResult(token=contract_address)
             case _:
-                return ErroredResult(token=contract_address, reason=f"AddressNotSupported: {contract_address}")
+                return ErroredResult(token=contract_address, reason=f"UnsupportedType: {contract_address}")
 
         try:
             return BalanceResult(
