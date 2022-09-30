@@ -38,7 +38,7 @@ class BscContractMaster:
         match master.type:
             case "pancake_ifo":
                 contract = PancakeIFO
-            case "pancake_liquidity_pool":
+            case "pancake_lp":
                 contract = PancakeLiquidityPool
             case "pancake_staking":
                 contract = PancakeStaking
