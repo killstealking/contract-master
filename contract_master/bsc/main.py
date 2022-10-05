@@ -22,6 +22,7 @@ from .contract import (
     Bep20TokenContract,
     CreamLendingCErc20Delegator,
     CreamLendingCEther,
+    DodoMine,
     PancakeIFO,
     PancakeLiquidityPool,
     PancakeMasterChef,
@@ -123,6 +124,8 @@ class BscContractMaster(ContractMaster):
                 contract = PancakeVault
             case "PancakeMasterChef":
                 contract = PancakeMasterChef
+            case "DodoMine":
+                contract = DodoMine
             case "ignored":
                 return IgnoredResult(address=address, reason="IgnoreType")
             case _:
