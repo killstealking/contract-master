@@ -18,7 +18,13 @@ from ..common import (
     lower,
     unique,
 )
-from .contract import Erc20TokenContract, UniLiquidityPool
+from .contract import (
+    Erc20TokenContract,
+    IronMasterChef,
+    PolycatMasterChef,
+    QuickswapStaking,
+    UniLiquidityPool,
+)
 
 
 class PolygonContractMaster(ContractMaster):
@@ -130,6 +136,12 @@ class PolygonContractMaster(ContractMaster):
         match master.type:
             case "UniLiquidityPool":
                 contract = UniLiquidityPool
+            case "PolycatMasterChef":
+                contract = PolycatMasterChef
+            case "IronMasterChef":
+                contract = IronMasterChef
+            case "QuickswapStaking":
+                contract = QuickswapStaking
             case "ignored":
                 return IgnoredResult(address=address, reason="IgnoreType")
             case _:
@@ -143,6 +155,7 @@ class PolygonContractMaster(ContractMaster):
                 ),
             )
         except Exception as e:
+            print(e)
             return ErroredResult(address=address, reason=str(e))
 
     def __is_contract(self, address: str) -> bool:
